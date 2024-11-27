@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Clientes - Mult-Service Cacoal</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Mult-Service Cacoal</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Início</a></li>
+        <li><a href="services.html">Serviços</a></li>
+        <li><a href="contact.html">Contato</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="registration">
+    <h2>Cadastro de Cliente e Agendamento</h2>
+    <form id="client-form">
+      <label for="client-name">Nome do Cliente:</label>
+      <input type="text" id="client-name" name="client-name" required>
+
+      <label for="client-email">Email:</label>
+      <input type="email" id="client-email" name="client-email" required>
+
+      <label for="client-phone">Telefone:</label>
+      <input type="text" id="client-phone" name="client-phone" required>
+
+      <label for="service-date">Data do Serviço:</label>
+      <input type="date" id="service-date" name="service-date" required>
+
+      <label for="service-time">Hora do Serviço:</label>
+      <input type="time" id="service-time" name="service-time" required>
+
+      <button type="submit">Registrar</button>
+    </form>
+
+    <h3>Clientes e Horários Agendados</h3>
+    <div id="appointments-list">
+      <p>Não há agendamentos ainda.</p>
+    </div>
+  </section>
+  <script src="js/script.js"></script>
+</body>
+</html>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f8ff; /* Azul bebê */
+  line-height: 1.6;
+  color: #333;
+}
+
+header {
+  background: #b22222; /* Vermelho */
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+}
+
+header nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+header nav ul li {
+  display: inline;
+  margin: 0 15px;
+}
+
+header nav ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+section {
+  padding: 20px;
+}
+
+form label {
+  margin-top: 10px;
+  display: block;
+  font-weight: bold;
+}
+
+form input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  background-color: #b22222; /* Vermelho */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #a00; /* Vermelho mais escuro para o hover */
+}
+
+footer {
+  background: #b22222; /* Vermelho */
+  color: white;
+  text-align: center;
+  padding: 10px;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+}
+
+#appointments-list {
+  margin-top: 20px;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid #b22222;
+}
+
+h2 {
+  color: #b22222; /* Vermelho */
+}
+
+h3 {
+  color: #b22222; /* Vermelho */
+}
+
+form input:focus, button:focus {
+  border-color: #4682b4; /* Azul bebê (para o foco) */
+  outline: none;
+}
+
+form input, button {
+  transition: border-color 0.3s;
+}
+// Função para registrar o cliente e o horário de serviço
+document.getElementById("client-form").addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  // Obter os valores dos campos
+  const clientName = document.getElementById("client-name").value;
+  const clientEmail = document.getElementById("client-email").value;
+  const clientPhone = document.getElementById("client-phone").value;
+  const serviceDate = document.getElementById("service-date").value;
+  const serviceTime = document.getElementById("service-time").value;
+
+  // Verifica se todos os campos foram preenchidos
+  if (clientName && clientEmail && clientPhone && serviceDate && serviceTime) {
+    // Cria um objeto para armazenar o agendamento
+    const appointment = {
+      clientName,
+      clientEmail,
+      clientPhone,
+      serviceDate,
+      serviceTime
+    };
+
+    // Recupera os agendamentos existentes ou cria um array novo
+    let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+
+    // Adiciona o novo agendamento ao array
+    appointments.push(appointment);
+
+    // Armazena novamente no localStorage
+    localStorage.setItem("appointments", JSON.stringify(appointments));
+
+    // Exibe os agendamentos atualizados
+    displayAppointments();
+    
+    // Limpa o formulário
+    document.getElementById("client-form").reset();
+  } else {
+    alert("Por favor, preencha todos os campos.");
+  }
+});
+
+// Função para exibir os agendamentos na tela
+function displayAppointments() {
+  const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+  const appointmentsList = document.getElementById("appointments-list");
+
+  if (appointments.length > 0) {
+    appointmentsList.innerHTML = appointments.map(appointment => {
+      return `<p><strong>Cliente:</strong> ${appointment.clientName} <br>
+              <strong>Email:</strong> ${appointment.clientEmail} <br>
+              <strong>Telefone:</strong> ${appointment.clientPhone} <br>
+              <strong>Data:</strong> ${appointment.serviceDate} <br>
+              <strong>Hora:</strong> ${appointment.serviceTime}</p>`;
+    }).join('');
+  } else {
+    appointmentsList.innerHTML = "<p>Não há agendamentos ainda.</p>";
+  }
+}
+
+// Exibe os agendamentos ao carregar a página
+window.onload = displayAppointments;
+
